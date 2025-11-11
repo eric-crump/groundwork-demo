@@ -2,6 +2,7 @@
 import { useDataContext } from "@/context/data.context";
 import { ContentstackClient } from "@/lib/contentstack-client";
 import DynamicForm from "@/components/DynamicForm";
+import ColorPickerDemo from "@/components/ColorPickerDemo";
 import { useState, useEffect, use } from "react";
 
 export default function Home({ params }) {
@@ -12,7 +13,7 @@ export default function Home({ params }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch the homepage content type which includes the groundwork_form field
+      // Fetch the homepage content type which includes the underline_form field
       const data = await ContentstackClient.getElementByType("homepage", locale, initialData);
       if(data) {
         setEntry(data[0]);
@@ -28,28 +29,29 @@ export default function Home({ params }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Page Title */}
-        {entry?.title && (
+        {/* Color Picker Demo */}
+        {entry && (entry.background_color || entry.line_color || entry.text_color) && (
           <div className="mb-8">
-            <h1 
-              {...entry?.$?.title} 
-              className="text-4xl font-bold text-gray-900"
-            >
-              {entry.title}
-            </h1>
+            <ColorPickerDemo 
+              colors={{
+                background_color: entry.background_color,
+                line_color: entry.line_color,
+                text_color: entry.text_color
+              }}
+            />
           </div>
         )}
 
         {/* Render the Dynamic Form if it exists */}
-        {entry?.groundwork_form && (
-          <DynamicForm formData={entry.groundwork_form} />
+        {entry?.underline_form && (
+          <DynamicForm formData={entry.underline_form} />
         )}
 
         {/* Show message if no form data */}
-        {entry && !entry.groundwork_form && (
+        {entry && !entry.underline_form && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
             <p className="text-yellow-800">
-              No form configured for this page. Add a form using the Groundwork Form field in Contentstack.
+              No form configured for this page. Add a form using the Underline Form field in Contentstack.
             </p>
           </div>
         )}
