@@ -2,7 +2,8 @@
 import { useDataContext } from "@/context/data.context";
 import { ContentstackClient } from "@/lib/contentstack-client";
 import DynamicForm from "@/components/DynamicForm";
-import ColorPickerDemo from "@/components/ColorPickerDemo";
+import Hero from "@/components/Hero";
+import Executives from "@/components/Executives";
 import { useState, useEffect, use } from "react";
 
 export default function Home({ params }) {
@@ -29,15 +30,16 @@ export default function Home({ params }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Color Picker Demo */}
-        {entry && (entry.background_color || entry.line_color || entry.text_color) && (
+        {/* Hero Section */}
+        {entry && (entry.background_color || entry.line_color || entry.text_color || entry.headline_font) && (
           <div className="mb-8">
-            <ColorPickerDemo 
+            <Hero 
               colors={{
                 background_color: entry.background_color,
                 line_color: entry.line_color,
                 text_color: entry.text_color
               }}
+              headline_font={entry.headline_font}
             />
           </div>
         )}
@@ -54,6 +56,11 @@ export default function Home({ params }) {
               No form configured for this page. Add a form using the Underline Form field in Contentstack.
             </p>
           </div>
+        )}
+
+        {/* Executives Section */}
+        {entry?.executives && (
+          <Executives executivesData={entry.executives} />
         )}
       </div>
     </div>
