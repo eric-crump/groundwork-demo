@@ -41,7 +41,7 @@ export default function Executives({ executivesData }) {
         // Handle response format
         if (response && response.success && response.data) {
           const data = response.data;
-          
+
           // Handle different response formats
           if (data.success && Array.isArray(data.data)) {
             setExecutives(data.data);
@@ -128,7 +128,7 @@ export default function Executives({ executivesData }) {
               key={executive.id || index}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="aspect-[3/4] w-full overflow-hidden bg-gray-100 relative">
+              <div className="aspect-3/4 w-full overflow-hidden bg-gray-100 relative">
                 {executive.imageUrl ? (
                   <img
                     src={executive.imageUrl}
