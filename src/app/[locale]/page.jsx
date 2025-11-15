@@ -4,6 +4,7 @@ import { ContentstackClient } from "@/lib/contentstack-client";
 import DynamicForm from "@/components/DynamicForm";
 import Hero from "@/components/Hero";
 import Executives from "@/components/Executives";
+import Footer from "@/components/Footer";
 import { useState, useEffect, use } from "react";
 
 export default function Home({ params }) {
@@ -16,9 +17,9 @@ export default function Home({ params }) {
     const fetchData = async () => {
       // Fetch the homepage content type which includes the underline_form field
       const data = await ContentstackClient.getElementByType("homepage", locale, initialData);
-      if(data) {
+      if (data) {
         setEntry(data[0]);
-        console.log(data[0]);
+        console.log("homepage", data[0]);
       } else {
         setEntry(null);
       }
@@ -33,7 +34,7 @@ export default function Home({ params }) {
         {/* Hero Section */}
         {entry && (entry.background_color || entry.line_color || entry.text_color || entry.headline_font) && (
           <div className="mb-8">
-            <Hero 
+            <Hero
               colors={{
                 background_color: entry.background_color,
                 line_color: entry.line_color,
@@ -63,6 +64,9 @@ export default function Home({ params }) {
           <Executives executivesData={entry.executives} />
         )}
       </div>
+
+      {/* Footer */}
+      <Footer locale={locale} />
     </div>
   );
 }

@@ -18,8 +18,15 @@ export default function Executives({ executivesData }) {
 
   useEffect(() => {
     const fetchExecutives = async () => {
-      if (!executivesData?.webServiceId) {
-        setError("No web service ID configured");
+      // Handle missing or invalid executivesData gracefully
+      if (!executivesData) {
+        setError("No web service configuration found");
+        setLoading(false);
+        return;
+      }
+
+      if (!executivesData.webServiceId) {
+        setError("Web service not configured. Please select a web service in Contentstack.");
         setLoading(false);
         return;
       }
@@ -32,25 +39,37 @@ export default function Executives({ executivesData }) {
         const response = await fetchWebServiceData(executivesData.webServiceId);
 
         // Handle response format
-        if (response.success && response.data) {
+        if (response && response.success && response.data) {
           const data = response.data;
           
           // Handle different response formats
-          if (data.success && data.data) {
+          if (data.success && Array.isArray(data.data)) {
             setExecutives(data.data);
           } else if (Array.isArray(data)) {
             setExecutives(data);
           } else if (data.data && Array.isArray(data.data)) {
             setExecutives(data.data);
           } else {
-            throw new Error("Unexpected response format");
+            // If data exists but isn't in expected format, try to extract array
+            const possibleArray = data.data || data;
+            if (Array.isArray(possibleArray)) {
+              setExecutives(possibleArray);
+            } else {
+              console.warn('Unexpected response format:', data);
+              setError("Received data in an unexpected format");
+            }
           }
         } else {
-          throw new Error("Invalid response format");
+          console.warn('Invalid response format:', response);
+          setError("Invalid response from server");
         }
       } catch (err) {
         console.error('Error fetching executives:', err);
-        setError(err.message || 'Failed to load executives');
+        // Use the error message from the API utility, or provide a fallback
+        const errorMessage = err.message || 'Failed to load executives. Please check your web service configuration.';
+        setError(errorMessage);
+        // Ensure we always set loading to false, even on error
+        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -75,9 +94,12 @@ export default function Executives({ executivesData }) {
     return (
       <div className="mb-8">
         <div className="container mx-auto px-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800 font-semibold mb-1">Error Loading Executives</p>
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-yellow-800 font-semibold mb-1">Unable to Load Executives</p>
+            <p className="text-yellow-700 text-sm">{error}</p>
+            <p className="text-yellow-600 text-xs mt-2">
+              This section will not be displayed until the web service is properly configured.
+            </p>
           </div>
         </div>
       </div>
